@@ -1,0 +1,12 @@
+app:
+  name: console
+  server:
+    ip: 127.0.0.1
+    port: 8989
+    timeout: 60000
+    cors:
+      enable: true
+    languages:
+      - Ruby
+      - Perl
+      - Python

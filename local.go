@@ -14,6 +14,13 @@ type localAdapter struct {
 	envs map[string]string
 }
 
+func NewLocal() *Config {
+	return &Config{&localAdapter{
+		data: make(map[string]any),
+		envs: make(map[string]string),
+	}}
+}
+
 func (c *localAdapter) Get(pattern string) (value any, err error) {
 	var (
 		keys = strings.Split(pattern, Point)
@@ -50,10 +57,11 @@ func (c *localAdapter) GetString(key string, def ...string) string {
 }
 
 func (c *localAdapter) GetBool(key string, def ...bool) bool {
-	v, _ := c.Get(key)
-	if v != nil {
-		return v.(bool)
+	v := c.GetString(key)
+	if v != "" {
+		return v == "true"
 	}
+
 	if len(def) > 0 {
 		return def[0]
 	}
@@ -77,11 +85,15 @@ func (c *localAdapter) GetArray(key string) (value []any) {
 }
 
 func (c *localAdapter) GetInt64(key string, def ...int64) int64 {
-	v, _ := c.Get(key)
-	if v != nil {
-		return v.(int64)
+	v := c.GetString(key)
+	if v != "" {
+		i, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			g.Error(err)
+			return 0
+		}
+		return i
 	}
-
 	if len(def) > 0 {
 		return def[0]
 	}

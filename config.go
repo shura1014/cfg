@@ -36,9 +36,7 @@ func LoadConfig(dir string, fileNames ...string) (conf *Config, err error) {
 		return nil, err
 	}
 
-	conf = &Config{&localAdapter{
-		data: make(map[string]any),
-	}}
+	conf = NewLocal()
 	for _, configPath := range configs {
 		ext := fileutil.ExtName(configPath)
 		// 判断是否是可支持的文件
@@ -50,6 +48,14 @@ func LoadConfig(dir string, fileNames ...string) (conf *Config, err error) {
 
 	// 环境变量优先
 	envs := env.GetAll()
+	adapter := conf.ConfigAdapter.(*localAdapter)
+	adapter.envs = envs
+	return
+}
+
+func LoadEnv() (conf *Config, err error) {
+	envs := env.GetAll()
+	conf = NewLocal()
 	adapter := conf.ConfigAdapter.(*localAdapter)
 	adapter.envs = envs
 	return

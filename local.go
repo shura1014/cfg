@@ -4,6 +4,7 @@ import (
 	"github.com/shura1014/cfg/g"
 	"github.com/shura1014/common/utils/stringutil"
 	"github.com/shura1014/common/utils/timeutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -41,6 +42,12 @@ func (c *localAdapter) Get(pattern string) (value any, err error) {
 		} else {
 			break
 		}
+	}
+
+	// 存在临时新增的环境变量，并不在缓存中
+	if val, ok := os.LookupEnv(pattern); ok {
+		return val, nil
+
 	}
 	return nil, nil
 }
